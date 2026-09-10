@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="card">
+  <p class="eyebrow">One prompt → full template</p>
+  <h1>Import Recursive Template</h1>
+  <p style="color:var(--muted);">
+    Give any AI the prompt below (edit the bracketed part), then paste its JSON output here.
+    Full schema: <code>schema_prompt_format.md</code> in the project root.
+  </p>
+  <pre style="background:var(--panel-2);padding:14px;border-radius:8px;white-space:pre-wrap;font-size:.82rem;">Generate a JSON object for a habit-tracker recursive template, following exactly this schema:
+{"template": {"title": str, "description": str|null, "scope": "lifelong"|"weekly"|"daily",
+"weekday": "MO".."SU"|null, "start_time": "HH:MM"|null, "end_time": "HH:MM"|null,
+"recurrence": "indefinite"|"weekly"|"daily"|"once", "difficulty": 1-5,
+"category": "Physical"|"Mental"|"Financial"|"Growth"|null, "children": [ ...same shape... ]}}
+Build it for: [describe your plan, e.g. "a lifelong Study Block 16:00-22:00 containing
+Monday=Calculus 16:00-18:00, Wednesday=Physics 16:00-18:00 ..."]
+Return ONLY the JSON, no prose.</pre>
+
+  <form method="post">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <label>Paste the JSON here</label>
+    <textarea name="payload" rows="12" placeholder='{"template": {...}}' required></textarea>
+    <button class="btn" type="submit">Import template</button>
+  </form>
+</div>
+{% endblock %}

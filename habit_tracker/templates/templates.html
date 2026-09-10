@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;">
+  <div><p class="eyebrow">Reusable blueprints</p><h1>Templates</h1></div>
+  <a class="btn" href="{{ url_for('templates_bp.import_template') }}">⚡ One-prompt import</a>
+</div>
+
+{% macro render_tpl(t) %}
+  <div class="task-block">
+    <strong>{{ t.title }}</strong> <span class="badge">{{ t.scope }}</span>
+    {% if t.weekday %}<span class="badge">{{ t.weekday }} {{ t.start_time.strftime('%H:%M') if t.start_time else '' }}-{{ t.end_time.strftime('%H:%M') if t.end_time else '' }}</span>{% endif %}
+    {% if t.children %}
+      {% for c in t.children %}{{ render_tpl(c) }}{% endfor %}
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% if templates %}
+  {% for t in templates %}
+    <div class="card">
+      {{ render_tpl(t) }}
+      <div style="margin-top:10px;display:flex;gap:8px;">
+        <form method="post" action="{{ url_for('templates_bp.instantiate', template_id=t.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <input type="hidden" name="weeks_ahead" value="4">
+          <button class="btn btn-sm btn-gold" type="submit">Instantiate next 4 weeks</button>
+        </form>
+        <form method="post" action="{{ url_for('templates_bp.delete_template', template_id=t.id) }}">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Delete template tree?')">Delete</button>
+        </form>
+      </div>
+    </div>
+  {% endfor %}
+{% else %}
+  <div class="card">No templates yet. Use the one-prompt import to create a whole recursive template at once.</div>
+{% endif %}
+{% endblock %}

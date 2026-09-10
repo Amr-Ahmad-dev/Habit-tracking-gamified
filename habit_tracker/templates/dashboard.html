@@ -1,0 +1,47 @@
+{% extends "base.html" %}
+{% block content %}
+<div style="display:flex;justify-content:space-between;align-items:center;">
+  <div>
+    <p class="eyebrow">{{ today.strftime('%A, %B %d') }}</p>
+    <h1>Today's Quests</h1>
+  </div>
+  <a class="btn" href="{{ url_for('tasks.new_task') }}">+ New task / block</a>
+</div>
+
+<p style="color:var(--muted);">{{ week_task_count }} task(s) scheduled this week.</p>
+
+{% macro render_task(t) %}
+  <div class="task-block">
+    <strong>{{ t.title }}</strong>
+    {% if t.skill_category_id %}<span class="badge">skill-linked</span>{% endif %}
+    <span class="badge">difficulty {{ t.difficulty }}</span>
+    {% if t.description %}<p style="color:var(--muted);font-size:.88rem;">{{ t.description }}</p>{% endif %}
+
+    {% if t.children %}
+      {% for c in t.children %}{{ render_task(c) }}{% endfor %}
+    {% else %}
+      <form method="post" action="{{ url_for('tasks.complete_task', task_id=t.id) }}" enctype="multipart/form-data"
+            style="display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:6px;">
+        <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+        <input type="number" name="completion_pct" min="0" max="100" placeholder="% done" style="width:100px;margin:0;" required>
+        <input type="file" name="photo" accept="image/*" style="width:200px;margin:0;">
+        <input type="hidden" name="log_date" value="{{ today }}">
+        <button class="btn btn-sm btn-gold" type="submit">Log completion</button>
+        <form method="post" action="{{ url_for('tasks.delete_task', task_id=t.id) }}" style="display:inline;">
+          <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+          <button class="btn btn-sm btn-danger" type="submit" onclick="return confirm('Delete this task?')">✕</button>
+        </form>
+      </form>
+    {% endif %}
+  </div>
+{% endmacro %}
+
+{% if tasks %}
+  {% for t in tasks %}
+    <div class="card">{{ render_task(t) }}</div>
+  {% endfor %}
+{% else %}
+  <div class="card">No tasks scheduled for today. <a href="{{ url_for('tasks.new_task') }}">Add one</a> or
+    <a href="{{ url_for('templates_bp.list_templates') }}">instantiate a template</a>.</div>
+{% endif %}
+{% endblock %}

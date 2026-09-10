@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Analytics</p>
+<h1>Compliance & Deviations</h1>
+
+{% if not has_data %}
+  <div class="card">No logged completions yet in the last 90 days. Log a task to see charts here.</div>
+{% else %}
+  <div class="card">
+    <span class="eyebrow">Overall (90d)</span>
+    <div class="stat-number">{{ overall_pct }}%</div>
+  </div>
+
+  <div class="grid grid-2">
+    <div class="card"><img class="chart-img" src="data:image/png;base64,{{ weekly_chart }}"></div>
+    <div class="card"><img class="chart-img" src="data:image/png;base64,{{ monthly_chart }}"></div>
+  </div>
+
+  <div class="card"><img class="chart-img" src="data:image/png;base64,{{ heatmap_chart }}"></div>
+
+  <div class="card">
+    <h3>⚠ Deviation Alerts</h3>
+    <p style="color:var(--muted);font-size:.85rem;">
+      Each entry is compared against that <em>specific task's own</em> completion history
+      (not a cross-task average) using a z-score threshold.
+    </p>
+    {% if deviations %}
+      <table>
+        <tr><th>Date</th><th>Task</th><th>Completion</th></tr>
+        {% for d in deviations %}
+          <tr><td>{{ d.log_date.strftime('%Y-%m-%d') }}</td><td>{{ d.title }}</td>
+              <td class="pill-deviation">{{ d.completion_pct }}%</td></tr>
+        {% endfor %}
+      </table>
+    {% else %}
+      <p style="color:var(--muted);">No significant deviations detected. 🎯</p>
+    {% endif %}
+  </div>
+{% endif %}
+{% endblock %}

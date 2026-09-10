@@ -1,0 +1,41 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Habit Quest{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+</head>
+<body>
+  {% if current_user.is_authenticated %}
+  <header class="hud-bar">
+    <a class="brand" href="{{ url_for('tasks.dashboard') }}">⚔ Habit&nbsp;Quest</a>
+    <nav>
+      <a href="{{ url_for('tasks.dashboard') }}">Dashboard</a>
+      <a href="{{ url_for('templates_bp.list_templates') }}">Templates</a>
+      <a href="{{ url_for('stats.overview') }}">Stats</a>
+      <a href="{{ url_for('leaderboard.board') }}">Leaderboard</a>
+      <a href="{{ url_for('music.player') }}">Focus Music</a>
+      <a href="{{ url_for('gamification.profile') }}">Profile</a>
+    </nav>
+    <div class="xp-pill" title="Level {{ current_user.level }} · {{ current_user.total_xp }} XP">
+      LV {{ current_user.level }} <span class="xp-num">{{ current_user.total_xp }} XP</span>
+    </div>
+    <a class="logout" href="{{ url_for('auth.logout') }}">Log out</a>
+  </header>
+  {% endif %}
+
+  <main class="container">
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        <div class="flash-stack">
+        {% for category, msg in messages %}
+          <div class="flash flash-{{ category }}">{{ msg }}</div>
+        {% endfor %}
+        </div>
+      {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+  </main>
+</body>
+</html>

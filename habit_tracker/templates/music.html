@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">Sound</p>
+<h1>Focus · Gym · Sleep</h1>
+
+<div class="card">
+  <form method="post" action="{{ url_for('music.upload') }}" enctype="multipart/form-data" style="display:flex;gap:10px;align-items:center;flex-wrap:wrap;">
+    <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+    <select name="category" style="width:140px;margin:0;">
+      <option value="focus">Focus</option>
+      <option value="gym">Gym</option>
+      <option value="sleep">Sleep</option>
+    </select>
+    <input type="file" name="track" accept="audio/*" style="width:auto;margin:0;">
+    <button class="btn btn-sm" type="submit">Upload track</button>
+  </form>
+</div>
+
+{% for category, items in tracks.items() %}
+  <div class="card">
+    <h3>{{ category | capitalize }}</h3>
+    {% if items %}
+      {% for t in items %}
+        <div class="track-row">
+          <span>{{ t.title }}</span>
+          <audio controls loop src="{{ url_for('static', filename='music/' + category + '/' + t.filename) }}"></audio>
+        </div>
+      {% endfor %}
+      <p style="color:var(--muted);font-size:.78rem;">Playback loops indefinitely by default.</p>
+    {% else %}
+      <p style="color:var(--muted);">No tracks yet — upload one above.</p>
+    {% endif %}
+  </div>
+{% endfor %}
+{% endblock %}

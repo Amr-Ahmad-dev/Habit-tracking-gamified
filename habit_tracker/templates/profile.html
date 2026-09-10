@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">{{ current_user.username }}</p>
+<h1>Character Sheet</h1>
+
+<div class="card">
+  <span class="eyebrow">Overall level {{ current_user.level }}</span>
+  <div class="xp-bar-track"><div class="xp-bar-fill" style="width: {{ ((current_user.total_xp / current_user.xp_for_next_level()) * 100) | round(1) }}%;"></div></div>
+  <p style="color:var(--muted);font-size:.82rem;">{{ current_user.total_xp }} / {{ current_user.xp_for_next_level() }} XP to level {{ current_user.level + 1 }}</p>
+</div>
+
+<div class="grid grid-2">
+  {% for name, skill in skills.items() %}
+    <div class="card">
+      <h3>{{ name }}</h3>
+      <span class="stat-number">Lv {{ skill.level if skill else 0 }}</span>
+      <div class="xp-bar-track"><div class="xp-bar-fill" style="width: {{ ((skill.xp if skill else 0) % 300) / 3 }}%;"></div></div>
+      <p style="color:var(--muted);font-size:.82rem;">{{ skill.xp if skill else 0 }} XP total</p>
+    </div>
+  {% endfor %}
+</div>
+
+<div class="card">
+  <h3>🏆 Rewards</h3>
+  {% if rewards %}
+    <div style="display:flex;gap:14px;flex-wrap:wrap;">
+      {% for r in rewards %}
+        <div class="badge" style="font-size:1rem;padding:8px 14px;">{{ r.reward.icon }} {{ r.reward.name }}</div>
+      {% endfor %}
+    </div>
+  {% else %}
+    <p style="color:var(--muted);">No rewards earned yet — log tasks to start unlocking badges.</p>
+  {% endif %}
+</div>
+{% endblock %}

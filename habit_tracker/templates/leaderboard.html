@@ -1,0 +1,22 @@
+{% extends "base.html" %}
+{% block content %}
+<p class="eyebrow">{{ total_users }} players</p>
+<h1>Leaderboard</h1>
+
+<div class="grid grid-3">
+  <div class="card"><span class="eyebrow">🥇 Best</span><h3>{{ best.username if best else '—' }}</h3><span class="stat-number">{{ best.total_xp if best else 0 }} XP</span></div>
+  <div class="card"><span class="eyebrow">You</span><h3>#{{ my_rank }}</h3><span class="stat-number">{{ current_user.total_xp }} XP</span></div>
+  <div class="card"><span class="eyebrow">Needs a push</span><h3>{{ worst.username if worst else '—' }}</h3><span class="stat-number">{{ worst.total_xp if worst else 0 }} XP</span></div>
+</div>
+
+<div class="card">
+  <table>
+    <tr><th>#</th><th>Player</th><th>Level</th><th>XP</th></tr>
+    {% for u in top10 %}
+      <tr class="{{ 'me' if u.id == current_user.id else '' }} {{ 'rank-1' if loop.index == 1 else '' }}">
+        <td>{{ loop.index }}</td><td>{{ u.username }}</td><td>{{ u.level }}</td><td>{{ u.total_xp }}</td>
+      </tr>
+    {% endfor %}
+  </table>
+</div>
+{% endblock %}
